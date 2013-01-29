@@ -1,0 +1,12 @@
+let g:neocomplcache_enable_auto_select=1
+set fileencodings=ucs-bom,utf-8,cp936
+"Remap VIM 0
+map 0 ^
+colorscheme ir_black
+set mouse=v
+set wrap
+
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+map <c-space> ?
+
