@@ -11,3 +11,4 @@ map <space> /
 map <c-space> ?
 
 UnBundle 'myusuf3/numbers.vim'
+set nu
