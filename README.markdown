@@ -51,7 +51,7 @@ If you have a bash-compatible shell you can run the script directly:
 
 ## Installing on Windows
 
-On Windows and \*nix [Git] and [Curl] are required.
+On Windows and \*nix [Git] and [Curl] are required. Also, if you haven't already, you'll need to install [Vim].
 
 ### Installing dependencies
 
@@ -398,6 +398,17 @@ spf13-vim includes [solarized] and [spf13 vim color pack](https://github.com/spf
 
 Use `:color molokai` to switch to a color scheme.
 
+Terminal Vim users will benefit from solarizing their terminal emulators and setting solarized support to 16 colors:
+
+    let g:solarized_termcolors=16
+    color solarized
+
+Terminal emulator colorschemes:
+
+* http://ethanschoonover.com/solarized (iTerm2, Terminal.app)
+* https://github.com/phiggins/konsole-colors-solarized (KDE Konsole)
+* https://github.com/sigurdga/gnome-terminal-colors-solarized (Gnome Terminal)
+
 ## Snippets
 
 It also contains a very complete set of [snippets](http://github.com/spf13/snipmate-snippets) for use with snipmate or [NeoComplCache].
@@ -431,6 +442,7 @@ Here's some tips if you've never used VIM before:
 
 [Git]:http://git-scm.com
 [Curl]:http://curl.haxx.se
+[Vim]:http://www.vim.org/download.php#pc
 [msysgit]:http://code.google.com/p/msysgit
 [MacVim]:http://code.google.com/p/macvim/
 [spf13-vim]:https://github.com/spf13/spf13-vim
@@ -446,7 +458,7 @@ Here's some tips if you've never used VIM before:
 [neocomplcache]:http://github.com/shougo/neocomplcache
 [Fugitive]:http://github.com/tpope/vim-fugitive
 [Surround]:https://github.com/tpope/vim-surround
-[Tagbar]:http://github.com/godlygeek/tagbar
+[Tagbar]:http://github.com/majutsushi/tagbar
 [Syntastic]:http://github.com/scrooloose/syntastic
 [vim-easymotion]:http://github.com/Lokaltog/vim-easymotion
 [Matchit]:http://www.vim.org/scripts/script.php?script_id=39

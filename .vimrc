@@ -131,6 +131,9 @@
 
     set cursorline                  " Highlight current line
 
+    highlight clear SignColumn      " SignColumn should match background for
+                                    " things like vim-gitgutter
+
     if has('cmdline_info')
         set ruler                   " Show the ruler
         set rulerformat=%30(%=\:b%n%y%m%r%w\ %l,%c%V\ %P%) " A ruler on steroids
@@ -166,7 +169,7 @@
     set scrolloff=3                 " Minimum lines to keep above and below cursor
     set foldenable                  " Auto fold code
     set list
-    set listchars=tab:,.,trail:.,extends:#,nbsp:. " Highlight problematic whitespace
+    set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
 
 " }
 
@@ -182,7 +185,8 @@
     set pastetoggle=<F12>           " pastetoggle (sane indentation on pastes)
     "set comments=sl:/*,mb:*,elx:*/  " auto format comment blocks
     " Remove trailing whitespaces and ^M chars
-    autocmd FileType c,cpp,java,php,javascript,python,twig,xml,yml autocmd BufWritePre <buffer> call StripTrailingWhitespace()
+    autocmd FileType c,cpp,java,go,php,javascript,python,twig,xml,yml autocmd BufWritePre <buffer> call StripTrailingWhitespace()
+    autocmd FileType go autocmd BufWritePre <buffer> Fmt
     autocmd BufNewFile,BufRead *.html.twig set filetype=html.twig
 
 " }
@@ -200,10 +204,16 @@
     endif
 
     " Easier moving in tabs and windows
-    map <C-J> <C-W>j<C-W>_
-    map <C-K> <C-W>k<C-W>_
-    map <C-L> <C-W>l<C-W>_
-    map <C-H> <C-W>h<C-W>_
+    " The lines conflict with the default digraph mapping of <C-K>
+    " If you prefer that functionality, add let g:spf13_no_easyWindows = 1
+    " in your .vimrc.bundles.local file
+
+    if !exists('g:spf13_no_easyWindows')
+        map <C-J> <C-W>j<C-W>_
+        map <C-K> <C-W>k<C-W>_
+        map <C-L> <C-W>l<C-W>_
+        map <C-H> <C-W>h<C-W>_
+    endif
 
     " Wrapped lines goes down/up to next row, rather than next line in file.
     nnoremap j gj
@@ -383,10 +393,6 @@
         nmap <leader>ss :SessionSave<CR>
     " }
 
-    " Buffer explorer {
-        nmap <leader>b :BufExplorer<CR>
-    " }
-
     " JSON {
         nmap <leader>jt <Esc>:%!python -m json.tool<CR><Esc>:set filetype=json<CR>
     " }
@@ -394,6 +400,7 @@
     " PyMode {
         let g:pymode_lint_checker = "pyflakes"
         let g:pymode_utils_whitespaces = 0
+        let g:pymode_options = 0
     " }
 
     " ctrlp {
@@ -406,7 +413,7 @@
 
         let g:ctrlp_user_command = {
             \ 'types': {
-                \ 1: ['.git', 'cd %s && git ls-files'],
+                \ 1: ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others'],
                 \ 2: ['.hg', 'hg --cwd %s locate -I .'],
             \ },
             \ 'fallback': 'find %s -type f'
@@ -463,8 +470,17 @@
         let g:neocomplcache_keyword_patterns._ = '\h\w*'
 
         " Plugin key-mappings.
-        imap <C-k> <Plug>(neosnippet_expand_or_jump)
-        smap <C-k> <Plug>(neosnippet_expand_or_jump)
+
+        " These two lines conflict with the default digraph mapping of <C-K>
+        " If you prefer that functionality, add
+        " let g:spf13_no_neosnippet_expand = 1
+        " in your .vimrc.bundles.local file
+
+        if !exists('g:spf13_no_neosnippet_expand')
+            imap <C-k> <Plug>(neosnippet_expand_or_jump)
+            smap <C-k> <Plug>(neosnippet_expand_or_jump)
+        endif
+
         inoremap <expr><C-g> neocomplcache#undo_completion()
         inoremap <expr><C-l> neocomplcache#complete_common_string()
         inoremap <expr><CR> neocomplcache#complete_common_string()
@@ -503,10 +519,18 @@
         " Use honza's snippets.
         let g:neosnippet#snippets_directory='~/.vim/bundle/snipmate-snippets/snippets'
 
+        " Enable neosnippet snipmate compatibility mode
+        let g:neosnippet#enable_snipmate_compatibility = 1        
+
         " For snippet_complete marker.
         if has('conceal')
             set conceallevel=2 concealcursor=i
         endif
+
+        " Disable the neosnippet preview candidate window
+        " When enabled, there can be too much visual noise
+        " especially when splits are used.
+        set completeopt-=preview
     " }
 
     " UndoTree {
@@ -536,18 +560,20 @@
     " GVIM- (here instead of .gvimrc)
     if has('gui_running')
         set guioptions-=T           " Remove the toolbar
-        set lines=40                " 40 lines of text instead of 24,
+        set lines=40                " 40 lines of text instead of 24
         if has("gui_gtk2")
             set guifont=Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
-        else
+        elseif has("gui_mac")
             set guifont=Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
+        elseif has("gui_win32")
+            set guifont=Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
         endif
         if has('gui_macvim')
-            set transparency=5          " Make the window slightly transparent
+            set transparency=5      " Make the window slightly transparent
         endif
     else
         if &term == 'xterm' || &term == 'screen'
-            set t_Co=256                 " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
+            set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
         endif
         "set term=builtin_ansi       " Make arrow and other keys work
     endif
