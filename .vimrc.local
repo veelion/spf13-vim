@@ -1,3 +1,4 @@
+set cmdheight=4
 let g:EasyMotion_leader_key = '<Leader>'
 let g:neocomplcache_enable_auto_select=1
 set fileencodings=ucs-bom,utf-8,cp936
