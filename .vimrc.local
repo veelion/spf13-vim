@@ -13,7 +13,7 @@ map <space> /
 map <c-space> ?
 map <F7> : ! python % <CR>
 map <F8> : ! python -m pdb  % <CR>
-map <F12> :!ctags -R <CR>
+map <F9> :!ctags -R <CR>
 
 " Plugin key-mappings.
 imap <C-k>     <Plug>(neosnippet_expand_or_jump)
