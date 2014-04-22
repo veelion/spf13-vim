@@ -157,7 +157,6 @@ do_backup   "Your old vim stuff has a suffix now and looks like .vim.`date +%Y%m
         "$HOME/.vimrc" \
         "$HOME/.gvimrc"
 
-<<<<<<< HEAD
 if [ ! -e $endpath/.git ]; then
     echo "cloning spf13-vim"
     git clone --recursive -b 3.0 http://github.com/veelion/spf13-vim.git $endpath
@@ -165,13 +164,10 @@ else
     echo "updating spf13-vim"
     cd $endpath && git pull
 fi
-=======
 clone_repo      "Successfully cloned $app_name"
->>>>>>> 26602274460531fd01f436154a422cfa086a8263
 
 create_symlinks "Setting up vim symlinks"
 
-<<<<<<< HEAD
 echo "setting up symlinks"
 lnif $endpath/.vimrc $HOME/.vimrc
 lnif $endpath/.vimrc.local $HOME/.vimrc.local
@@ -182,9 +178,7 @@ lnif $endpath/.vim $HOME/.vim
 if [ ! -d $endpath/.vim/bundle ]; then
     mkdir -p $endpath/.vim/bundle
 fi
-=======
 clone_vundle    "Successfully cloned vundle"
->>>>>>> 26602274460531fd01f436154a422cfa086a8263
 
 setup_vundle    "Now updating/installing plugins using Vundle"
 
