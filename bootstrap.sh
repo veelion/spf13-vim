@@ -1,6 +1,22 @@
 #!/usr/bin/env bash
+
+#   Copyright 2014 Steve Francia
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
+app_dir="$HOME/.spf13-vim-3"
 [ -z "$git_uri" ] && git_uri='https://github.com/spf13/spf13-vim.git'
 git_branch='3.0'
 debug_mode='0'
@@ -39,6 +55,12 @@ program_exists() {
     fi
 }
 
+variable_set() {
+    if [ -z "$1" ]; then
+        error "You must have your HOME environmental variable set to continue."
+    fi
+}
+
 ############################ SETUP FUNCTIONS
 lnif() {
     if [ -e "$1" ]; then
@@ -64,7 +86,7 @@ upgrade_repo() {
       msg "trying to update $1"
 
       if [ "$1" = "$app_name" ]; then
-          cd "$HOME/.$app_name-3" &&
+          cd "$app_dir" &&
           git pull origin "$git_branch"
       fi
 
@@ -80,10 +102,9 @@ upgrade_repo() {
 
 clone_repo() {
     program_exists "git" "Sorry, we cannot continue without GIT, please install it first."
-    endpath="$HOME/.$app_name-3"
 
-    if [ ! -e "$endpath/.git" ]; then
-        git clone --recursive -b "$git_branch" "$git_uri" "$endpath"
+    if [ ! -e "$app_dir" ]; then
+        git clone --recursive -b "$git_branch" "$git_uri" "$app_dir"
         ret="$?"
         success "$1"
         debug
@@ -104,7 +125,7 @@ clone_vundle() {
 }
 
 create_symlinks() {
-    endpath="$HOME/.$app_name-3"
+    endpath="$app_dir"
 
     if [ ! -d "$endpath/.vim/bundle" ]; then
         mkdir -p "$endpath/.vim/bundle"
@@ -142,7 +163,14 @@ create_symlinks() {
 setup_vundle() {
     system_shell="$SHELL"
     export SHELL='/bin/sh'
-    vim -u "$HOME/.vimrc.bundles" +BundleInstall! +BundleClean +qall
+    
+    vim \
+        -u "$app_dir/.vimrc.bundles.default" \
+        "+set nomore" \
+        "+BundleInstall!" \
+        "+BundleClean" \
+        "+qall"
+    
     export SHELL="$system_shell"
 
     success "$1"
@@ -150,6 +178,7 @@ setup_vundle() {
 }
 
 ############################ MAIN()
+variable_set "$HOME"
 program_exists "vim" "To install $app_name you first need to install Vim."
 
 do_backup   "Your old vim stuff has a suffix now and looks like .vim.`date +%Y%m%d%S`" \
