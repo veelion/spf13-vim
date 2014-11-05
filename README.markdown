@@ -25,19 +25,17 @@ Lastly (and perhaps, most importantly) It is completely cross platform. It works
 
 ## Linux, \*nix, Mac OSX Installation
 
-The easiest way to install spf13-vim is to use our [automatic installer](https://j.mp/spf13-vim3) by simply copying and pasting the following line into a terminal. This will install spf13-vim and backup your existing vim configuration. If you are upgrading from a prior version (before 3.0) this is also the recommended installation.
-
-*Requires Git 1.7+ and Vim 7.3+*
+The easiest way to install spf13-vim is to use our [automatic installer](https://raw.github.com/veelion/spf13-vim/3.0/bootstrap.sh) by simply copying and pasting the following line into a terminal. This will install spf13-vim and backup your existing vim configuration. If you are upgrading from a prior version (before 3.0) this is also the recommended installation.
 
 ```bash
-
-    curl https://j.mp/spf13-vim3 -L > spf13-vim.sh && sh spf13-vim.sh
+    
+    curl https://raw.github.com/veelion/spf13-vim/3.0/bootstrap.sh -L > spf13-vim.sh && sh spf13-vim.sh
 ```
 
 If you have a bash-compatible shell you can run the script directly:
 ```bash
 
-    sh <(curl https://j.mp/spf13-vim3 -L)
+    sh <(curl https://raw.github.com/veelion/spf13-vim/3.0/bootstrap.sh -L)
 ```
 
 ## Installing on Windows
