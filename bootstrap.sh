@@ -17,7 +17,7 @@
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
 app_dir="$HOME/.spf13-vim-3"
-endpath="$HOME/.spf13-vim-3"
+endpath="$app_dir"
 [ -z "$git_uri" ] && git_uri='https://github.com/veelion/spf13-vim.git'
 git_branch='3.0'
 debug_mode='0'
