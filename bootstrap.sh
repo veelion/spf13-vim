@@ -16,10 +16,16 @@
 
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
+<<<<<<< HEAD
 app_dir="$HOME/.spf13-vim-3"
 endpath="$app_dir"
 [ -z "$git_uri" ] && git_uri='https://github.com/veelion/spf13-vim.git'
 git_branch='3.0'
+=======
+[ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-3"
+[ -z "$REPO_URI" ] && REPO_URI='https://github.com/spf13/spf13-vim.git'
+[ -z "$REPO_BRANCH" ] && REPO_BRANCH='3.0'
+>>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 debug_mode='0'
 fork_maintainer='0'
 [ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/gmarik/vundle.git"
@@ -31,18 +37,18 @@ msg() {
 
 success() {
     if [ "$ret" -eq '0' ]; then
-    msg "\e[32m[✔]\e[0m ${1}${2}"
+        msg "\33[32m[✔]\33[0m ${1}${2}"
     fi
 }
 
 error() {
-    msg "\e[31m[✘]\e[0m ${1}${2}"
+    msg "\33[31m[✘]\33[0m ${1}${2}"
     exit 1
 }
 
 debug() {
     if [ "$debug_mode" -eq '1' ] && [ "$ret" -gt '1' ]; then
-      msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}, we're sorry for that."
+        msg "An error occurred in function \"${FUNCNAME[$i+1]}\" on line ${BASH_LINENO[$i+1]}, we're sorry for that."
     fi
 }
 
@@ -52,7 +58,7 @@ program_exists() {
 
     # throw error on non-zero return value
     if [ ! "$ret" -eq '0' ]; then
-    error "$2"
+        error "You must have '$1' installed to continue."
     fi
 }
 
@@ -62,7 +68,6 @@ variable_set() {
     fi
 }
 
-############################ SETUP FUNCTIONS
 lnif() {
     if [ -e "$1" ]; then
         ln -sf "$1" "$2"
@@ -71,123 +76,118 @@ lnif() {
     debug
 }
 
+############################ SETUP FUNCTIONS
+
 do_backup() {
-    if [ -e "$2" ] || [ -e "$3" ] || [ -e "$4" ]; then
+    if [ -e "$1" ] || [ -e "$2" ] || [ -e "$3" ]; then
+        msg "Attempting to back up your original vim configuration."
         today=`date +%Y%m%d_%s`
-        for i in "$2" "$3" "$4"; do
-            [ -e "$i" ] && [ ! -L "$i" ] && mv "$i" "$i.$today";
+        for i in "$1" "$2" "$3"; do
+            [ -e "$i" ] && [ ! -L "$i" ] && mv -v "$i" "$i.$today";
         done
         ret="$?"
-        success "$1"
+        success "Your original vim configuration has been backed up."
         debug
    fi
 }
 
-upgrade_repo() {
-      msg "trying to update $1"
+sync_repo() {
+    local repo_path="$1"
+    local repo_uri="$2"
+    local repo_branch="$3"
+    local repo_name="$4"
 
-      if [ "$1" = "$app_name" ]; then
-          cd "$app_dir" &&
-          git pull origin "$git_branch"
-      fi
+    msg "Trying to update $repo_name"
 
-      if [ "$1" = "vundle" ]; then
-          cd "$HOME/.vim/bundle/vundle" &&
-          git pull origin master
-      fi
-
-      ret="$?"
-      success "$2"
-      debug
-}
-
-clone_repo() {
-    program_exists "git" "Sorry, we cannot continue without GIT, please install it first."
-
-    if [ ! -e "$app_dir" ]; then
-        git clone --recursive -b "$git_branch" "$git_uri" "$app_dir"
+    if [ ! -e "$repo_path" ]; then
+        mkdir -p "$repo_path"
+        git clone -b "$repo_branch" "$repo_uri" "$repo_path"
         ret="$?"
-        success "$1"
-        debug
+        success "Successfully cloned $repo_name."
     else
-        upgrade_repo "$app_name"    "Successfully updated $app_name"
+        cd "$repo_path" && git pull origin "$repo_branch"
+        ret="$?"
+        success "Successfully updated $repo_name"
     fi
-}
 
-clone_vundle() {
-    if [ ! -e "$HOME/.vim/bundle/vundle" ]; then
-        git clone $VUNDLE_URI "$HOME/.vim/bundle/vundle"
-    else
-        upgrade_repo "vundle"   "Successfully updated vundle"
-    fi
-    ret="$?"
-    success "$1"
     debug
 }
 
 create_symlinks() {
-    endpath="$app_dir"
+    local source_path="$1"
+    local target_path="$2"
 
-    if [ ! -d "$endpath/.vim/bundle" ]; then
-        mkdir -p "$endpath/.vim/bundle"
-    fi
+    lnif "$source_path/.vimrc"         "$target_path/.vimrc"
+    lnif "$source_path/.vimrc.bundles" "$target_path/.vimrc.bundles"
+    lnif "$source_path/.vimrc.before"  "$target_path/.vimrc.before"
+    lnif "$source_path/.vim"           "$target_path/.vim"
 
+<<<<<<< HEAD
     lnif "$endpath/.vimrc"              "$HOME/.vimrc"
     lnif "$endpath/.vimrc.local"        "$HOME/.vimrc.local"
     lnif "$endpath/.vimrc.bundles"      "$HOME/.vimrc.bundles"
     lnif "$endpath/.vimrc.before"       "$HOME/.vimrc.before"
     lnif "$endpath/.vim"                "$HOME/.vim"
-
-    # Useful for fork maintainers
-    touch  "$HOME/.vimrc.local"
-
-    if [ -e "$endpath/.vimrc.fork" ]; then
-        ln -sf "$endpath/.vimrc.fork" "$HOME/.vimrc.fork"
-    elif [ "$fork_maintainer" -eq '1' ]; then
-        touch "$HOME/.vimrc.fork"
-        touch "$HOME/.vimrc.bundles.fork"
-        touch "$HOME/.vimrc.before.fork"
-    fi
-
-    if [ -e "$endpath/.vimrc.bundles.fork" ]; then
-        ln -sf "$endpath/.vimrc.bundles.fork" "$HOME/.vimrc.bundles.fork"
-    fi
-
-    if [ -e "$endpath/.vimrc.before.fork" ]; then
-        ln -sf "$endpath/.vimrc.before.fork" "$HOME/.vimrc.before.fork"
-    fi
+=======
+    touch  "$target_path/.vimrc.local"
+>>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
     ret="$?"
-    success "$1"
+    success "Setting up vim symlinks."
     debug
 }
 
+setup_fork_mode() {
+    local source_path="$2"
+    local target_path="$3"
+
+    if [ "$1" -eq '1' ]; then
+        touch "$target_path/.vimrc.fork"
+        touch "$target_path/.vimrc.bundles.fork"
+        touch "$target_path/.vimrc.before.fork"
+
+        lnif "$source_path/.vimrc.fork"         "$target_path/.vimrc.fork"
+        lnif "$source_path/.vimrc.bundles.fork" "$target_path/.vimrc.bundles.fork"
+        lnif "$source_path/.vimrc.before.fork"  "$target_path/.vimrc.before.fork"
+
+        ret="$?"
+        success "Created fork maintainer files."
+        debug
+    fi
+}
+
 setup_vundle() {
-    system_shell="$SHELL"
+    local system_shell="$SHELL"
     export SHELL='/bin/sh'
-    
+
     vim \
-        -u "$app_dir/.vimrc.bundles.default" \
+        -u "$1" \
         "+set nomore" \
         "+BundleInstall!" \
         "+BundleClean" \
         "+qall"
-    
+
     export SHELL="$system_shell"
 
-    success "$1"
+    success "Now updating/installing plugins using Vundle"
     debug
 }
 
 ############################ MAIN()
 variable_set "$HOME"
-program_exists "vim" "To install $app_name you first need to install Vim."
+program_exists  "vim"
+program_exists  "git"
 
-do_backup   "Your old vim stuff has a suffix now and looks like .vim.`date +%Y%m%d%S`" \
-        "$HOME/.vim" \
-        "$HOME/.vimrc" \
-        "$HOME/.gvimrc"
+do_backup       "$HOME/.vim" \
+                "$HOME/.vimrc" \
+                "$HOME/.gvimrc"
 
+sync_repo       "$APP_PATH" \
+                "$REPO_URI" \
+                "$REPO_BRANCH" \
+                "$app_name"
+
+<<<<<<< HEAD
 if [ ! -e $endpath/.git ]; then
     echo "cloning spf13-vim"
     git clone --recursive -b 3.0 http://github.com/veelion/spf13-vim.git $endpath
@@ -196,9 +196,16 @@ else
     cd $endpath && git pull
 fi
 clone_repo      "Successfully cloned $app_name"
+=======
+create_symlinks "$APP_PATH" \
+                "$HOME"
+>>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
-create_symlinks "Setting up vim symlinks"
+setup_fork_mode "$fork_maintainer" \
+                "$APP_PATH" \
+                "$HOME"
 
+<<<<<<< HEAD
 echo "setting up symlinks"
 lnif $endpath/.vimrc $HOME/.vimrc
 lnif $endpath/.vimrc.local $HOME/.vimrc.local
@@ -210,8 +217,14 @@ if [ ! -d $endpath/.vim/bundle ]; then
     mkdir -p $endpath/.vim/bundle
 fi
 clone_vundle    "Successfully cloned vundle"
+=======
+sync_repo       "$HOME/.vim/bundle/vundle" \
+                "$VUNDLE_URI" \
+                "master" \
+                "vundle"
+>>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
-setup_vundle    "Now updating/installing plugins using Vundle"
+setup_vundle    "$APP_PATH/.vimrc.bundles.default"
 
 msg             "\nThanks for installing $app_name."
 msg             "© `date +%Y` http://vim.spf13.com/"
