@@ -16,16 +16,9 @@
 
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
-<<<<<<< HEAD
-app_dir="$HOME/.spf13-vim-3"
-endpath="$app_dir"
-[ -z "$git_uri" ] && git_uri='https://github.com/veelion/spf13-vim.git'
-git_branch='3.0'
-=======
 [ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-3"
 [ -z "$REPO_URI" ] && REPO_URI='https://github.com/spf13/spf13-vim.git'
 [ -z "$REPO_BRANCH" ] && REPO_BRANCH='3.0'
->>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 debug_mode='0'
 fork_maintainer='0'
 [ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/gmarik/vundle.git"
@@ -122,15 +115,7 @@ create_symlinks() {
     lnif "$source_path/.vimrc.before"  "$target_path/.vimrc.before"
     lnif "$source_path/.vim"           "$target_path/.vim"
 
-<<<<<<< HEAD
-    lnif "$endpath/.vimrc"              "$HOME/.vimrc"
-    lnif "$endpath/.vimrc.local"        "$HOME/.vimrc.local"
-    lnif "$endpath/.vimrc.bundles"      "$HOME/.vimrc.bundles"
-    lnif "$endpath/.vimrc.before"       "$HOME/.vimrc.before"
-    lnif "$endpath/.vim"                "$HOME/.vim"
-=======
     touch  "$target_path/.vimrc.local"
->>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
     ret="$?"
     success "Setting up vim symlinks."
@@ -187,42 +172,17 @@ sync_repo       "$APP_PATH" \
                 "$REPO_BRANCH" \
                 "$app_name"
 
-<<<<<<< HEAD
-if [ ! -e $endpath/.git ]; then
-    echo "cloning spf13-vim"
-    git clone --recursive -b 3.0 http://github.com/veelion/spf13-vim.git $endpath
-else
-    echo "updating spf13-vim"
-    cd $endpath && git pull
-fi
-clone_repo      "Successfully cloned $app_name"
-=======
 create_symlinks "$APP_PATH" \
                 "$HOME"
->>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
 setup_fork_mode "$fork_maintainer" \
                 "$APP_PATH" \
                 "$HOME"
 
-<<<<<<< HEAD
-echo "setting up symlinks"
-lnif $endpath/.vimrc $HOME/.vimrc
-lnif $endpath/.vimrc.local $HOME/.vimrc.local
-lnif $endpath/.vimrc.fork $HOME/.vimrc.fork
-lnif $endpath/.vimrc.bundles $HOME/.vimrc.bundles
-lnif $endpath/.vimrc.bundles.fork $HOME/.vimrc.bundles.fork
-lnif $endpath/.vim $HOME/.vim
-if [ ! -d $endpath/.vim/bundle ]; then
-    mkdir -p $endpath/.vim/bundle
-fi
-clone_vundle    "Successfully cloned vundle"
-=======
 sync_repo       "$HOME/.vim/bundle/vundle" \
                 "$VUNDLE_URI" \
                 "master" \
                 "vundle"
->>>>>>> 91d3d8edc6c13113cda3fe1d8a2945fd453d5749
 
 setup_vundle    "$APP_PATH/.vimrc.bundles.default"
 
