@@ -2,6 +2,7 @@
 autocmd BufNewFile *.py 0r ~/.vim/template/simple.py
 
 " color ir_black
+color google
 set cmdheight=2
 let g:EasyMotion_leader_key = '<Leader>'
 let g:neocomplcache_enable_auto_select=1
