@@ -25,7 +25,7 @@
             return has('unix') && !has('macunix') && !has('win32unix')
         endfunction
         silent function! WINDOWS()
-            return  (has('win16') || has('win32') || has('win64'))
+            return  (has('win32') || has('win64'))
         endfunction
     " }
 
@@ -41,6 +41,13 @@
         " across (heterogeneous) systems easier.
         if WINDOWS()
           set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+        endif
+    " }
+    
+    " Arrow Key Fix {
+        " https://github.com/spf13/spf13-vim/issues/780
+        if &term[:4] == "xterm" || &term[:5] == 'screen' || &term[:3] == 'rxvt'
+            inoremap <silent> <C-[>OC <RIGHT>
         endif
     " }
 
@@ -61,6 +68,19 @@
 " General {
 
     set background=dark         " Assume a dark background
+
+    " Allow to trigger background
+    function! ToggleBG()
+        let s:tbg = &background
+        " Inversion
+        if s:tbg == "dark"
+            set background=light
+        else
+            set background=dark
+        endif
+    endfunction
+    noremap <leader>bg :call ToggleBG()<CR>
+
     " if !has('gui')
         "set term=$TERM          " Make arrow and other keys work
     " endif
@@ -106,7 +126,7 @@
     if !exists('g:spf13_no_restore_cursor')
         function! ResCur()
             if line("'\"") <= line("$")
-                normal! g`"
+                silent! normal! g`"
                 return 1
             endif
         endfunction
@@ -249,6 +269,22 @@
         let maplocalleader=g:spf13_localleader
     endif
 
+    " The default mappings for editing and applying the spf13 configuration
+    " are <leader>ev and <leader>sv respectively. Change them to your preference
+    " by adding the following to your .vimrc.before.local file:
+    "   let g:spf13_edit_config_mapping='<leader>ec'
+    "   let g:spf13_apply_config_mapping='<leader>sc'
+    if !exists('g:spf13_edit_config_mapping')
+        let s:spf13_edit_config_mapping = '<leader>ev'
+    else
+        let s:spf13_edit_config_mapping = g:spf13_edit_config_mapping
+    endif
+    if !exists('g:spf13_apply_config_mapping')
+        let s:spf13_apply_config_mapping = '<leader>sv'
+    else
+        let s:spf13_apply_config_mapping = g:spf13_apply_config_mapping
+    endif
+
     " Easier moving in tabs and windows
     " The lines conflict with the default digraph mapping of <C-K>
     " If you prefer that functionality, add the following to your
@@ -346,16 +382,6 @@
     nmap <leader>f8 :set foldlevel=8<CR>
     nmap <leader>f9 :set foldlevel=9<CR>
 
-    "UPPERCASE and lowsercase conversion
-    nnoremap g^ gUiW
-    nnoremap gv guiW
-
-    "go to first and last char of line
-    nnoremap H ^
-    nnoremap L g_
-    vnoremap H ^
-    vnoremap L g_
-
     " Most prefer to toggle search highlighting rather than clear the current
     " search results. To clear search highlighting rather than toggle it on
     " and off, add the following to your .vimrc.before.local file:
@@ -420,6 +446,51 @@
 
 " Plugins {
 
+    " GoLang {
+        if count(g:spf13_bundle_groups, 'go')
+            let g:go_highlight_functions = 1
+            let g:go_highlight_methods = 1
+            let g:go_highlight_structs = 1
+            let g:go_highlight_operators = 1
+            let g:go_highlight_build_constraints = 1
+            let g:go_fmt_command = "goimports"
+            let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+            let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+            au FileType go nmap <Leader>s <Plug>(go-implements)
+            au FileType go nmap <Leader>i <Plug>(go-info)
+            au FileType go nmap <Leader>e <Plug>(go-rename)
+            au FileType go nmap <leader>r <Plug>(go-run)
+            au FileType go nmap <leader>b <Plug>(go-build)
+            au FileType go nmap <leader>t <Plug>(go-test)
+            au FileType go nmap <Leader>gd <Plug>(go-doc)
+            au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
+            au FileType go nmap <leader>co <Plug>(go-coverage)
+        endif
+        " }
+
+
+    " TextObj Sentence {
+        if count(g:spf13_bundle_groups, 'writing')
+            augroup textobj_sentence
+              autocmd!
+              autocmd FileType markdown call textobj#sentence#init()
+              autocmd FileType textile call textobj#sentence#init()
+              autocmd FileType text call textobj#sentence#init()
+            augroup END
+        endif
+    " }
+
+    " TextObj Quote {
+        if count(g:spf13_bundle_groups, 'writing')
+            augroup textobj_quote
+                autocmd!
+                autocmd FileType markdown call textobj#quote#init()
+                autocmd FileType textile call textobj#quote#init()
+                autocmd FileType text call textobj#quote#init({'educate': 0})
+            augroup END
+        endif
+    " }
+
     " PIV {
         let g:DisableAutoPHPFolding = 0
         let g:PIVAutoClose = 0
@@ -446,8 +517,10 @@
             hi PmenuThumb  guifg=#F8F8F8 guibg=#8A95A7 gui=NONE ctermfg=lightgray ctermbg=darkcyan cterm=NONE
 
             " Some convenient mappings
-            inoremap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
-            inoremap <expr> <CR>       pumvisible() ? "\<C-y>" : "\<CR>"
+            "inoremap <expr> <Esc>      pumvisible() ? "\<C-e>" : "\<Esc>"
+            if exists('g:spf13_map_cr_omni_complete')
+                inoremap <expr> <CR>     pumvisible() ? "\<C-y>" : "\<CR>"
+            endif
             inoremap <expr> <Down>     pumvisible() ? "\<C-n>" : "\<Down>"
             inoremap <expr> <Up>       pumvisible() ? "\<C-p>" : "\<Up>"
             inoremap <expr> <C-d>      pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
@@ -529,9 +602,17 @@
     " }
 
     " PyMode {
-        let g:pymode_lint_checker = "pyflakes"
-        let g:pymode_utils_whitespaces = 0
-        let g:pymode_options = 0
+        " Disable if python support not present
+        if !has('python') && !has('python3')
+            let g:pymode = 0
+        endif
+
+        if isdirectory(expand("~/.vim/bundle/python-mode"))
+            let g:pymode_lint_checkers = ['pyflakes']
+            let g:pymode_trim_whitespaces = 0
+            let g:pymode_options = 0
+            let g:pymode_rope = 0
+        endif
     " }
 
     " ctrlp {
@@ -543,15 +624,15 @@
                 \ 'dir':  '\.git$\|\.hg$\|\.svn$',
                 \ 'file': '\.exe$\|\.so$\|\.dll$\|\.pyc$' }
 
-            " On Windows use "dir" as fallback command.
-            if WINDOWS()
-                let s:ctrlp_fallback = 'dir %s /-n /b /s /a-d'
-            elseif executable('ag')
+            if executable('ag')
                 let s:ctrlp_fallback = 'ag %s --nocolor -l -g ""'
             elseif executable('ack-grep')
                 let s:ctrlp_fallback = 'ack-grep %s --nocolor -f'
             elseif executable('ack')
                 let s:ctrlp_fallback = 'ack %s --nocolor -f'
+            " On Windows use "dir" as fallback command.
+            elseif WINDOWS()
+                let s:ctrlp_fallback = 'dir %s /-n /b /s /a-d'
             else
                 let s:ctrlp_fallback = 'find %s -type f'
             endif
@@ -582,12 +663,11 @@
         endif
     "}
 
-    " PythonMode {
-        " Disable if python support not present
-        if !has('python')
-            let g:pymode = 0
+    " Rainbow {
+        if isdirectory(expand("~/.vim/bundle/rainbow/"))
+            let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
         endif
-    " }
+    "}
 
     " Fugitive {
         nnoremap <silent> <leader>gs :Gstatus<CR>
@@ -915,6 +995,8 @@
         endif
     " }
 
+
+
 " }
 
 " GUI Settings {
@@ -1037,6 +1119,48 @@
     " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
     " }
 
+    function! s:IsSpf13Fork()
+        let s:is_fork = 0
+        let s:fork_files = ["~/.vimrc.fork", "~/.vimrc.before.fork", "~/.vimrc.bundles.fork"]
+        for fork_file in s:fork_files
+            if filereadable(expand(fork_file, ":p"))
+                let s:is_fork = 1
+                break
+            endif
+        endfor
+        return s:is_fork
+    endfunction
+     
+    function! s:ExpandFilenameAndExecute(command, file)
+        execute a:command . " " . expand(a:file, ":p")
+    endfunction
+     
+    function! s:EditSpf13Config()
+        call <SID>ExpandFilenameAndExecute("tabedit", "~/.vimrc")
+        call <SID>ExpandFilenameAndExecute("vsplit", "~/.vimrc.before")
+        call <SID>ExpandFilenameAndExecute("vsplit", "~/.vimrc.bundles")
+     
+        execute bufwinnr(".vimrc") . "wincmd w"
+        call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.local")
+        wincmd l
+        call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.before.local")
+        wincmd l
+        call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.bundles.local")
+     
+        if <SID>IsSpf13Fork()
+            execute bufwinnr(".vimrc") . "wincmd w"
+            call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.fork")
+            wincmd l
+            call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.before.fork")
+            wincmd l
+            call <SID>ExpandFilenameAndExecute("split", "~/.vimrc.bundles.fork")
+        endif
+     
+        execute bufwinnr(".vimrc.local") . "wincmd w"
+    endfunction
+     
+    execute "noremap " . s:spf13_edit_config_mapping " :call <SID>EditSpf13Config()<CR>"
+    execute "noremap " . s:spf13_apply_config_mapping . " :source ~/.vimrc<CR>"
 " }
 
 " Use fork vimrc if available {

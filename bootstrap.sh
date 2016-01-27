@@ -16,16 +16,10 @@
 
 ############################  SETUP PARAMETERS
 app_name='spf13-vim'
-<<<<<<< HEAD
-app_dir="$HOME/.spf13-vim-3"
-endpath="$app_dir"
-[ -z "$git_uri" ] && git_uri='https://github.com/veelion/spf13-vim.git'
-git_branch='3.0'
-=======
+
 [ -z "$APP_PATH" ] && APP_PATH="$HOME/.spf13-vim-3"
 [ -z "$REPO_URI" ] && REPO_URI='https://github.com/veelion/spf13-vim.git'
 [ -z "$REPO_BRANCH" ] && REPO_BRANCH='3.0'
->>>>>>> 5d6f19df65a4c72c2050a4b7494655446f7162ae
 debug_mode='0'
 fork_maintainer='0'
 [ -z "$VUNDLE_URI" ] && VUNDLE_URI="https://github.com/gmarik/vundle.git"
@@ -54,10 +48,21 @@ debug() {
 
 program_exists() {
     local ret='0'
-    type $1 >/dev/null 2>&1 || { local ret='1'; }
+    command -v $1 >/dev/null 2>&1 || { local ret='1'; }
+
+    # fail on non-zero return value
+    if [ "$ret" -ne 0 ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+program_must_exist() {
+    program_exists $1
 
     # throw error on non-zero return value
-    if [ ! "$ret" -eq '0' ]; then
+    if [ "$?" -ne 0 ]; then
         error "You must have '$1' installed to continue."
     fi
 }
@@ -123,7 +128,12 @@ create_symlinks() {
     lnif "$source_path/.vim"           "$target_path/.vim"
     lnif "$source_path/.vimrc.local"   "$target_path/.vimrc.local"
 
-    # touch  "$target_path/.vimrc.local"
+    if program_exists "nvim"; then
+        lnif "$source_path/.vim"       "$target_path/.config/nvim"
+        lnif "$source_path/.vimrc"     "$target_path/.config/nvim/init.vim"
+    fi
+
+    touch  "$target_path/.vimrc.local"
 
     ret="$?"
     success "Setting up vim symlinks."
@@ -168,8 +178,8 @@ setup_vundle() {
 
 ############################ MAIN()
 variable_set "$HOME"
-program_exists  "vim"
-program_exists  "git"
+program_must_exist "vim"
+program_must_exist "git"
 
 do_backup       "$HOME/.vim" \
                 "$HOME/.vimrc" \
