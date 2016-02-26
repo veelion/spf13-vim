@@ -1,11 +1,16 @@
+" YouCompleteMe
+let g:ycm_error_symbol = 'XX'
+let g:ycm_warning_symbol = '>>'
+let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>', '<Space>']
+
 " file template
 autocmd BufNewFile *.py 0r ~/.vim/template/simple.py
+
 
 " color ir_black
 " color google
 set cmdheight=2
 let g:EasyMotion_leader_key = '<Leader>'
-let g:neocomplcache_enable_auto_select=1
 set fileencodings=ucs-bom,utf-8,cp936
 " Remap VIM 0
 map 0 ^
@@ -20,24 +25,18 @@ map <F7> : ! python % <CR>
 map <F8> : ! python -m pdb  % <CR>
 map <F9> :!ctags -R <CR>
 
-" Plugin key-mappings.
-imap <C-k>     <Plug>(neosnippet_expand_or_jump)
-smap <C-k>     <Plug>(neosnippet_expand_or_jump)
-xmap <C-k>     <Plug>(neosnippet_expand_target)
 
-" SuperTab like snippets behavior.
-imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: pumvisible() ? "\<C-n>" : "\<TAB>"
-smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
-\ "\<Plug>(neosnippet_expand_or_jump)"
-\: "\<TAB>"
 
-" For snippet_complete marker.
-if has('conceal')
-  set conceallevel=2 concealcursor=i
-endif
-
-UnBundle 'myusuf3/numbers.vim'
 set nu
 set nospell
+
+" syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+
