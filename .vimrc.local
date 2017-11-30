@@ -44,12 +44,13 @@ UnBundle 'myusuf3/numbers.vim'
 set nu
 set nospell
 
+
 if has('python3')
-    " "UnBundle 'Shougo/neocomplete.vim.git'
-    " "UnBundle 'Shougo/neosnippet'
-    " "UnBundle 'Shougo/neosnippet-snippets'
-    " "UnBundle 'honza/vim-snippets'
-    " "let g:neocomplete#enable_at_startup = 0
+    " UnBundle 'Shougo/neocomplete.vim.git'
+    " UnBundle 'Shougo/neosnippet'
+    " UnBundle 'Shougo/neosnippet-snippets'
+    " UnBundle 'honza/vim-snippets'
+    " let g:neocomplete#enable_at_startup = 0
 
     Bundle 'davidhalter/jedi-vim'
     autocmd Filetype python set omnifunc=jedi#completions
