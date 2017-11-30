@@ -1,0 +1,61 @@
+if !exists("g:bundles")
+    let g:bundles = g:vundle#bundles
+endif
+
+" color ir_black
+autocmd BufNewFile *.py 0r ~/.vim/template/simple.py
+
+set cmdheight=2
+let g:EasyMotion_leader_key = '<Leader>'
+let g:neocomplcache_enable_auto_select=1
+set fileencodings=ucs-bom,utf-8,cp936
+" Remap VIM 0
+map 0 ^
+" colorscheme ir_black
+set mouse=v
+set wrap
+
+" Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
+map <space> /
+map <c-space> ?
+map <F7> : ! python % <CR>
+map <F8> : ! python -m pdb  % <CR>
+map <F9> :!ctags -R <CR>
+
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: "\<TAB>"
+
+" For snippet_complete marker.
+if has('conceal')
+  set conceallevel=2 concealcursor=i
+endif
+
+UnBundle 'myusuf3/numbers.vim'
+set nu
+set nospell
+
+if has('python3')
+    " "UnBundle 'Shougo/neocomplete.vim.git'
+    " "UnBundle 'Shougo/neosnippet'
+    " "UnBundle 'Shougo/neosnippet-snippets'
+    " "UnBundle 'honza/vim-snippets'
+    " "let g:neocomplete#enable_at_startup = 0
+
+    Bundle 'davidhalter/jedi-vim'
+    autocmd Filetype python set omnifunc=jedi#completions
+    let g:jedi#completions_enabled = 1
+    let g:jedi#use_tabs_not_buffers = 1
+    let g:jedi#use_splits_not_buffers = "left"
+    autocmd FileType python setlocal completeopt-=preview
+    let g:pymode_rope = 0
+endif

@@ -91,7 +91,7 @@
     " In your .vimrc.before.local file
     " list only the plugin groups you will use
     if !exists('g:spf13_bundle_groups')
-        let g:spf13_bundle_groups=['general', 'writing', 'neocomplcache', 'programming', 'php', 'ruby', 'python', 'twig', 'javascript', 'html', 'misc',]
+        let g:spf13_bundle_groups=['general', 'writing', 'neocomplete', 'programming', 'php', 'ruby', 'python', 'python3', 'twig', 'javascript', 'html', 'misc',]
     endif
 
     " To override all the included bundles, add the following to your
@@ -170,10 +170,6 @@
             if filereadable(expand("~/.vim/bundle/vim-snippets/snippets/support_functions.vim"))
                 source ~/.vim/bundle/vim-snippets/snippets/support_functions.vim
             endif
-        elseif count(g:spf13_bundle_groups, 'youcompleteme')
-            Bundle 'Valloric/YouCompleteMe'
-            Bundle 'SirVer/ultisnips'
-            Bundle 'honza/vim-snippets'
         elseif count(g:spf13_bundle_groups, 'neocomplcache')
             Bundle 'Shougo/neocomplcache'
             Bundle 'Shougo/neosnippet'
@@ -184,6 +180,8 @@
             Bundle 'Shougo/neosnippet'
             Bundle 'Shougo/neosnippet-snippets'
             Bundle 'honza/vim-snippets'
+        elseif count(g:spf13_bundle_groups, 'jedi-vim')
+            Bundle 'davidhalter/jedi-vim'
         endif
     " }
 
@@ -200,7 +198,7 @@
             Bundle 'klen/python-mode'
             Bundle 'python.vim'
             Bundle 'python_match.vim'
-            Bundle 'pythoncomplete'
+            " "Bundle 'pythoncomplete'
         endif
     " }
 
@@ -239,7 +237,7 @@
 
     " HTML {
         if count(g:spf13_bundle_groups, 'html')
-            Bundle 'amirh/HTML-AutoCloseTag'
+            " "Bundle 'amirh/HTML-AutoCloseTag'
             Bundle 'hail2u/vim-css3-syntax'
             Bundle 'gorodinskiy/vim-coloresque'
             Bundle 'tpope/vim-haml'
