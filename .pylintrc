@@ -1,0 +1,12 @@
+#My pylintrc for use with syntastic in spf13-vim
+[MESSAGES CONTROL]
+disable=missing-docstring
+
+[BASIC]
+# Regular expression matching correct variable names
+variable-rgx=[a-z_][a-z0-9_]{0,30}$
+
+# Naming hint for variable names
+variable-name-hint=[a-z_][a-z0-9_]{0,30}$
+
+
